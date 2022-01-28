@@ -8,12 +8,24 @@ const blockSize = 40;
 
 const ticksPerSec = 3;
 
+var fileSystem;
 var imageCache;
 
 var hero;
 
-function completedLoad(object) {
-    object.loadComplete();
+function onComplete() {
+    imageCache = ImageManager.cache;
+    gameLoop();
+}
+
+function onProgress() {
+
+}
+
+function load() {
+    jQuery.get('files.json', function(data) {
+        ImageManager.load(data, onComplete, onProgress);
+    });
 }
 
 class Character {
@@ -24,24 +36,6 @@ class Character {
         this.y = 200;
     }
 
-    load(onComplete) {
-        this.onComplete = onComplete;
-        var images = [];
-        for (var frame = 0; frame < 3; frame++) {
-            images.push({
-                name: this.name + frame,
-                src: "lib/" + this.name + "/" + this.name + frame + ".png"
-            });
-        }
-        ImageManager.load(images, completedLoad(this), function() {});
-    }
-
-    loadComplete() {
-        debugger;
-        this.imageCache = ImageManager.cache;
-        this.onComplete();
-    }
-
     update() {
         this.x += 1;
         this.tick += 1;
@@ -49,23 +43,14 @@ class Character {
     }
 
     draw() {
-        console.log(this.imageCache);
-        var key = this.name + String((Math.floor(this.tick / 90)) % 3);
-        let image = this.imageCache[key];
+        if (this.images == undefined) {
+            this.images = imageCache;
+        }
+        var imageName = "characters/" + this.name + "/" + this.name + String((Math.floor(this.tick / 90)) % 3);
+        let image = this.images[imageName];
+        console.log(imageName);
         ctx.drawImage(image, this.x, this.y);
     }
-}
-
-function load() {
-//     var images = [];
-//     for (var heroFrame = 0; heroFrame < 3; heroFrame++) {
-//         images.push({
-//             name: "hero" + heroFrame,
-//             src: "lib/hero" + heroFrame + ".png"
-//         });
-//     }
-//     ImageManager.load(images, function() {imageCache = ImageManager.cache; gameLoop();}, function() {})
-    gameLoop();
 }
 
 function main() {
@@ -77,9 +62,7 @@ function main() {
     document.body.appendChild(canvas);
     ctx = canvas.getContext("2d");
     hero = new Character("hero");
-    hero.load(function() {
-        load();
-    })
+    load();
 }
 
 function draw() {
