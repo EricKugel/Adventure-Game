@@ -6,8 +6,6 @@ var height;
 
 const blockSize = 40;
 
-const ticksPerSec = 3;
-
 var fileSystem;
 var imageCache;
 
@@ -46,9 +44,8 @@ class Character {
         if (this.images == undefined) {
             this.images = imageCache;
         }
-        var imageName = "characters/" + this.name + "/" + this.name + String((Math.floor(this.tick / 90)) % 3);
+        var imageName = "characters/" + this.name + "/" + this.name + String((Math.floor(this.tick / 10)) % 3);
         let image = this.images[imageName];
-        console.log(imageName);
         ctx.drawImage(image, this.x, this.y);
     }
 }
@@ -66,19 +63,13 @@ function main() {
 }
 
 function draw() {
-    for (var x = 0; x < width / blockSize; x++) {
-        for (var y = 0; y < height / blockSize; y++) {
-            ctx.fillStyle = "black";
-            ctx.fillRect(x * blockSize, y * blockSize, blockSize, blockSize);
-            ctx.fillStyle = "white";
-            ctx.fillRect(x * blockSize + blockSize / 30, y * blockSize + blockSize / 30, blockSize * 14 / 15, blockSize * 14 / 15)
-        }
-    }
+    ctx.clearRect(0, 0, width, height);
+    PRARIE.draw(ctx, imageCache);
     hero.draw();
 }
 
-function gameLoop(time) {
+function gameLoop() {
     hero.update();
     draw();
-    requestAnimationFrame(gameLoop);
+    setTimeout(gameLoop, 1000 / 20)
 }
