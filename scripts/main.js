@@ -11,6 +11,13 @@ var imageCache;
 
 var hero;
 
+var keysDown = {
+    "ArrowLeft": false,
+    "ArrowRight": false,
+    "ArrowUp": false,
+    "ArrowDown": false
+}
+
 function onComplete() {
     imageCache = ImageManager.cache;
     gameLoop();
@@ -35,7 +42,15 @@ class Character {
     }
 
     update() {
-        this.x += 1;
+        if (keysDown["ArrowRight"]) {
+            this.x += 5;
+        } if (keysDown["ArrowLeft"]) {
+            this.x -= 5;
+        } if (keysDown["ArrowUp"]) {
+            this.y -= 5;
+        } if (keysDown["ArrowDown"]) {
+            this.y += 5;
+        }
         this.tick += 1;
         this.tick = this.tick % 1000;
     }
@@ -58,6 +73,18 @@ function main() {
     canvas.height = height;
     document.body.appendChild(canvas);
     ctx = canvas.getContext("2d");
+
+    document.addEventListener("keydown", function (event) {
+        try {
+            keysDown[event.key] = true;
+        } catch(error) { }
+    });
+    document.addEventListener("keyup", function (event) {
+        try {
+            keysDown[event.key] = false;
+        } catch(error) { }
+    });
+
     hero = new Character("hero");
     load();
 }
