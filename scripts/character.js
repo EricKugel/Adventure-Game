@@ -33,6 +33,7 @@ class Character {
             this.images = imageCache;
         }
         var imageName = "characters/" + this.name + "/" + this.direction + this.state + (this.tick % 8);
+        console.log(imageName);
         let image = this.images[imageName];
         ctx.drawImage(image, this.x, this.y);
     }
